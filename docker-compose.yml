@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres:16
+    environment: {POSTGRES_USER: ops, POSTGRES_PASSWORD: ops, POSTGRES_DB: ops}
+    ports: ["5432:5432"]
+    healthcheck: {test: ["CMD-SHELL","pg_isready -U ops"], interval: 3s, retries: 20}
+  app:
+    build: .
+    environment: {DATABASE_URL: "postgres://ops:ops@db:5432/ops", JWT_SECRET: change-me}
+    ports: ["3000:3000"]
+    depends_on: {db: {condition: service_healthy}}
